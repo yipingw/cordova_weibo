@@ -128,15 +128,18 @@ public class YCWeibo extends CordovaPlugin {
      * @return
      */
     private boolean checkClientInstalled(CallbackContext callbackContext) {
-        mWeiboShareAPI = WeiboShareSDK.createWeiboAPI(
-                this.cordova.getActivity(), APP_KEY);
-        mWeiboShareAPI.registerApp();
-        if (mWeiboShareAPI.isWeiboAppInstalled()) {
+        AuthInfo mAuthInfo = new AuthInfo(YCWeibo.this.cordova.getActivity(),
+                APP_KEY, REDIRECT_URL, SCOPE);
+        if (mSsoHandler == null) {
+            mSsoHandler = new SsoHandler(YCWeibo.this.cordova.getActivity(),
+                    mAuthInfo);
+        }
+        Boolean installed = mSsoHandler.isWeiboAppInstalled();
+        if (installed) {
             callbackContext.success();
         } else {
             callbackContext.error(WEIBO_CLIENT_NOT_INSTALLED);
         }
-
         return true;
     }
 
@@ -162,7 +165,6 @@ public class YCWeibo extends CordovaPlugin {
     private boolean shareToWeibo(CallbackContext callbackContext,
                                  final JSONArray args) {
         currentCallbackContext = callbackContext;
-        
         mWeiboShareAPI = WeiboShareSDK.createWeiboAPI(
                 this.cordova.getActivity(), APP_KEY);
         mWeiboShareAPI.registerApp();
