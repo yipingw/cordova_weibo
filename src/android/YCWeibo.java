@@ -105,25 +105,17 @@ public class YCWeibo extends CordovaPlugin {
                 mAuthInfo);
         mAccessToken = AccessTokenKeeper.readAccessToken(YCWeibo.this.cordova
                 .getActivity());
-        if (mAccessToken.isSessionValid()) {
-            JSONObject jo = makeJson(mAccessToken.getToken(),
-                    mAccessToken.getUid());
-            this.webView.sendPluginResult(new PluginResult(
-                    PluginResult.Status.OK, jo), callbackContext
-                    .getCallbackId());
-        } else {
-            Runnable runnable = new Runnable() {
+                
+        Runnable runnable = new Runnable() {
                 public void run() {
                     if (mSsoHandler != null) {
                         mSsoHandler.authorize(AuthListener);
                     }
                 }
-
-                ;
             };
             this.cordova.setActivityResultCallback(this);
             this.cordova.getActivity().runOnUiThread(runnable);
-        }
+            
         return true;
     }
 
